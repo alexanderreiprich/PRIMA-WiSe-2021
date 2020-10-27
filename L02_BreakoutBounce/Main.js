@@ -9,7 +9,9 @@ var L02_BreakoutBounce;
     let slider = new fc.Node("Slider");
     let cubeSize = new fc.Vector3(0.1, 0.1, 0);
     //let sliderSize: fc.Vector3 = new fc.Vector3(1, 0.1, 0);
-    let velocityVector = new fc.Vector3(Math.random() / 4, Math.random() / 4, 0);
+    let velocityVector = new fc.Vector3(fc.Random.default.getRange(-1, 1), fc.Random.default.getRange(-1, 1), 0);
+    let speed = 0.5;
+    velocityVector.normalize(speed);
     function sceneLoad(_event) {
         const canvas = document.querySelector("canvas");
         fc.Debug.log(canvas);
@@ -23,6 +25,7 @@ var L02_BreakoutBounce;
         ball.addComponent(cMaterial);
         root.appendChild(ball);
         root.mtxLocal.scale(cubeSize);
+        ball.addComponent(new fc.ComponentTransform());
         //Slider [WIP]
         let meshSlider = new fc.MeshCube();
         let cmpSlider = new fc.ComponentMesh(meshSlider);
@@ -40,10 +43,14 @@ var L02_BreakoutBounce;
         fc.Loop.start(fc.LOOP_MODE.TIME_REAL);
     }
     function hndLoop(_event) {
-        move();
+        let frameTime = fc.Time.game.getElapsedSincePreviousCall() / 1000;
+        let tempVector = velocityVector.copy;
+        tempVector.scale(frameTime);
+        ball.mtxLocal.translate(tempVector);
+        updateMovement();
         L02_BreakoutBounce.viewport.draw();
     }
-    function move() {
+    function updateMovement() {
         if (root.mtxLocal.translation.x >= 2 || root.mtxLocal.translation.x <= -2) {
             let tempVector = new fc.Vector3(-velocityVector.x, velocityVector.y, 0);
             root.mtxLocal.translate(tempVector);

@@ -1,4 +1,4 @@
-namespace L02_BreakoutBounce {
+namespace L04_BreakoutReflection {
 
     import fc = FudgeCore;
 
@@ -8,11 +8,10 @@ namespace L02_BreakoutBounce {
     export let viewport: fc.Viewport;
 
     let root: fc.Node = new fc.Node("Root");
-    let ball: fc.Node = new fc.Node("Ball");
-    let slider: fc.Node = new fc.Node("Slider");
+    let ball: GameObject;
+    export let walls: fc.Node = new fc.Node("Walls");
 
     let cubeSize: fc.Vector3 = new fc.Vector3(0.1, 0.1, 0);
-    //let sliderSize: fc.Vector3 = new fc.Vector3(1, 0.1, 0);
 
     let velocityVector: fc.Vector3 = new fc.Vector3(fc.Random.default.getRange(-1, 1), fc.Random.default.getRange(-1, 1), 0);
     let speed: number = 0.5;
@@ -26,27 +25,7 @@ namespace L02_BreakoutBounce {
 
         root.addComponent(new fc.ComponentTransform());
 
-        //Ball
-        let meshBall: fc.MeshCube = new fc.MeshCube();
-        let cmpBall: fc.ComponentMesh = new fc.ComponentMesh(meshBall);
-        ball.addComponent(cmpBall);
-
-        let mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE")));
-        let cMaterial: fc.ComponentMaterial = new fc.ComponentMaterial(mtrSolidWhite);
-        ball.addComponent(cMaterial);
-
-        root.appendChild(ball);
-        root.mtxLocal.scale(cubeSize);
-
-        ball.addComponent(new fc.ComponentTransform());
-
-        //Slider [WIP]
-        let meshSlider: fc.MeshCube = new fc.MeshCube();
-        let cmpSlider: fc.ComponentMesh = new fc.ComponentMesh(meshSlider);
-        slider.addComponent(cmpSlider);
-        slider.addComponent(cMaterial);
-
-        root.appendChild(slider);
+        createGameEnviroment();
 
         //Camera
         let cCamera: fc.ComponentCamera = new fc.ComponentCamera();
@@ -58,7 +37,7 @@ namespace L02_BreakoutBounce {
         fc.Debug.log(viewport);
 
         fc.Loop.addEventListener(fc.EVENT.LOOP_FRAME, hndLoop);
-        fc.Loop.start(fc.LOOP_MODE.TIME_REAL);
+        fc.Loop.start(fc.LOOP_MODE.TIME_REAL, 60);
        
     }
 
@@ -66,30 +45,31 @@ namespace L02_BreakoutBounce {
 
         let frameTime: number = fc.Time.game.getElapsedSincePreviousCall() / 1000;
         let tempVector: fc.Vector3 = velocityVector.copy;
-
+        
         tempVector.scale(frameTime);
         ball.mtxLocal.translate(tempVector);
         updateMovement();
+
         viewport.draw();
+        hndCollision();
 
     }
 
     function updateMovement(): void {
 
-
-        if (root.mtxLocal.translation.x >= 2 || root.mtxLocal.translation.x <= -2) {
+        if (ball.mtxLocal.translation.x >= 21 || ball.mtxLocal.translation.x <= -21) {
 
             let tempVector: fc.Vector3 = new fc.Vector3(-velocityVector.x, velocityVector.y, 0);
-            root.mtxLocal.translate(tempVector);
+            ball.mtxLocal.translate(tempVector);
             velocityVector = tempVector;
 
             console.log("boink");
             
         }
-        else if (root.mtxLocal.translation.y >= 1.3 || root.mtxLocal.translation.y <= -1.3) {
+        else if (ball.mtxLocal.translation.y >= 14 || ball.mtxLocal.translation.y <= -14) {
 
             let tempVector: fc.Vector3 = new fc.Vector3(velocityVector.x, -velocityVector.y, 0);
-            root.mtxLocal.translate(tempVector);
+            ball.mtxLocal.translate(tempVector);
             velocityVector = tempVector;
 
             console.log("boink");
@@ -97,8 +77,54 @@ namespace L02_BreakoutBounce {
         }
         else {
 
-            root.mtxLocal.translate(velocityVector);
+            ball.mtxLocal.translate(velocityVector);
 
+        }
+
+    }
+
+    function createGameEnviroment(): void {
+        
+
+        //Ball
+        ball = new GameObject("Ball", new fc.Vector2(0, 0), new fc.Vector2(1, 1));
+
+        root.appendChild(ball);
+        root.mtxLocal.scale(cubeSize);
+
+        //Wall
+        root.addChild(walls);
+        walls.addChild(new GameObject("WallLeft", new fc.Vector2(-18, 0), new fc.Vector2(1, 25)));
+        walls.addChild(new GameObject("WallRight", new fc.Vector2(18, 0), new fc.Vector2(1, 25)));
+        walls.addChild(new GameObject("WallBottom", new fc.Vector2(0, -12), new fc.Vector2(35, 1)));
+        walls.addChild(new GameObject("WallTop", new fc.Vector2(0, 12), new fc.Vector2(35, 1)));
+
+
+    }
+
+    function hndCollision(): void {
+        
+        for (let wall of walls.getChildren()) {
+
+            let intersection: fc.Rectangle = ball.rect.getIntersection((<GameObject>wall).rect);
+
+            if (intersection) {
+
+                console.log("Ball collides!");
+                
+                if (intersection.size.x > intersection.size.y) {
+
+                    velocityVector.y *= -1;
+
+                }
+                else {
+
+                    velocityVector.x *= -1;
+                    
+                }
+
+            }
+        
         }
 
     }
