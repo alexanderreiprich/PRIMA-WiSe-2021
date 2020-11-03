@@ -7,6 +7,9 @@ namespace L04_BreakoutReflection {
         private static mtrSolidWhite: fc.Material = new fc.Material("SolidWhite", fc.ShaderUniColor, new fc.CoatColored(fc.Color.CSS("WHITE")));
         private static meshQuad: fc.MeshQuad = new fc.MeshQuad();
 
+        public velocity: fc.Vector3 = fc.Vector3.ZERO();
+        public speed: number = 20;
+
         public rect: fc.Rectangle;
 
         public constructor(_name: string, _position: fc.Vector2, _size: fc.Vector2) {
@@ -24,8 +27,18 @@ namespace L04_BreakoutReflection {
             this.addComponent(cMaterial);
 
         }
-        
 
+        /**
+        * move moves the game object and the collision detection reactangle
+        */
+        public move(): void {
+            let frameTime: number = fc.Time.game.getElapsedSincePreviousCall() / 1000;
+            let distance: fc.Vector3 = fc.Vector3.SCALE(this.velocity, frameTime);
+
+            this.mtxLocal.translate(distance);
+            this.rect.position.x = this.mtxLocal.translation.x - this.rect.size.x;
+            this.rect.position.y = this.mtxLocal.translation.y - this.rect.size.y;
+        }
     }
 
 }
