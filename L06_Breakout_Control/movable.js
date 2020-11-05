@@ -4,8 +4,8 @@ var L06_BreakOut_Control;
     var fc = FudgeCore;
     let Moveable = /** @class */ (() => {
         class Moveable extends L06_BreakOut_Control.GameObject {
-            constructor(_name, _position, _size) {
-                super(_name, _position, _size);
+            constructor(_name, _position, _size, _color) {
+                super(_name, _position, _size, _color);
                 this.speed = 15;
                 this.velocity = fc.Vector3.ZERO();
                 this.velocity = new fc.Vector3(fc.Random.default.getRange(-1, 1), fc.Random.default.getRange(-1, 1), 0);

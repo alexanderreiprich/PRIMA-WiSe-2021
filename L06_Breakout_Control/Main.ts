@@ -1,6 +1,10 @@
 namespace L06_BreakOut_Control {
     import fc = FudgeCore;
 
+    enum GAMESTATE {
+        START, PLAY, GAMEOVER, WIN
+    }
+
     window.addEventListener("load", hndLoad);
 
     let ball: Moveable;
@@ -8,8 +12,16 @@ namespace L06_BreakOut_Control {
     let bricks: fc.Node;
     let paddle: Paddle;
 
+    let gamestate: GAMESTATE;
+    gamestate = GAMESTATE.START;
+
     export let viewport: fc.Viewport;
     let root: fc.Node;
+
+    let control: fc.Control = new fc.Control("PaddleControl", 20, fc.CONTROL_TYPE.PROPORTIONAL);
+    control.setDelay(100);
+
+    let score: number = 0;
 
     function hndLoad(_event: Event): void {
 
@@ -18,7 +30,7 @@ namespace L06_BreakOut_Control {
 
         root = new fc.Node("Root");
 
-        ball = new Moveable("Ball", new fc.Vector2(0, 0), new fc.Vector2(1, 1));
+        ball = new Moveable("Ball", new fc.Vector2(0, 0), new fc.Vector2(1, 1), "WHITE");
         root.addChild(ball);
 
         walls = new fc.Node("Walls");
@@ -27,10 +39,12 @@ namespace L06_BreakOut_Control {
         paddle = new Paddle("Paddle", new fc.Vector2(0, -10), new fc.Vector2(4, 1));
         root.addChild(paddle);
 
-        walls.addChild(new GameObject("WallLeft", new fc.Vector2(-18, 0), new fc.Vector2(1, 25)));
-        walls.addChild(new GameObject("WallRight", new fc.Vector2(18, 0), new fc.Vector2(1, 25)));
-        walls.addChild(new GameObject("WallTop", new fc.Vector2(0, 12), new fc.Vector2(35, 1)));
-        walls.addChild(new GameObject("WallBottom", new fc.Vector2(0, -12), new fc.Vector2(35, 1)));
+        walls.addChild(new GameObject("WallLeft", new fc.Vector2(-18, -1.5), new fc.Vector2(1, 28), "WHITE"));
+        walls.addChild(new GameObject("WallRight", new fc.Vector2(18, -1.5), new fc.Vector2(1, 28), "WHITE"));
+        walls.addChild(new GameObject("WallTop", new fc.Vector2(0, 12), new fc.Vector2(35, 1), "WHITE"));
+        walls.addChild(new GameObject("WallBottom", new fc.Vector2(0, -15), new fc.Vector2(35, 1), "BLACK"));
+
+
 
         bricks = new fc.Node("Bricks");
         addBricks(28);
@@ -45,14 +59,24 @@ namespace L06_BreakOut_Control {
 
         document.getElementById("status").innerHTML = " ";
 
+        score = 0;
+        document.getElementById("score").innerHTML = "Score: " + score;
+
         fc.Loop.addEventListener(fc.EVENT.LOOP_FRAME, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
+        gamestate = GAMESTATE.PLAY;
     }
 
     function hndLoop(_event: Event): void {
 
         ball.move();
         paddle.movePaddle();
+        /* control.setInput(
+            fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT])
+            + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])
+        ); */
+
+        paddle.velocity = fc.Vector3.X(control.getOutput());
 
         hndCollision();
 
@@ -68,20 +92,41 @@ namespace L06_BreakOut_Control {
         for (let brick of bricks.getChildren() as Brick[]) {
             if (ball.checkCollision(brick)) {
                 brick.hit();
-                //hndLoss();
+                score += 100;
+                document.getElementById("score").innerHTML = "Score: " + score;
+
             }
         }
+
+        if (ball.checkCollision(<GameObject>walls.getChildrenByName("WallBottom")[0])) {
+            hndLoss();
+        }
+        
+        hndWin();
 
         ball.checkCollision(paddle);
 
     }
 
-    /* function hndLoss(): void {
+    function hndLoss(): void {
 
-        document.getElementById("status").innerHTML = "You Lost.";
+        gamestate = GAMESTATE.GAMEOVER;
+        document.getElementById("status").innerHTML = "You Lost. Click to restart.";
         window.addEventListener("click", hndLoad);
+        fc.Loop.stop();
 
-    } */
+    }
+
+    function hndWin(): void {
+        
+        if (bricks.getChild(0) == null) {
+            gamestate = GAMESTATE.WIN;
+            document.getElementById("status").innerHTML = "You Won! Congratulations! Click to restart.";
+            window.addEventListener("click", hndLoad);
+            fc.Loop.stop();
+        }
+
+    }
 
     function addBricks(_amount: number): void {
         let x: number = -12;
@@ -92,7 +137,7 @@ namespace L06_BreakOut_Control {
                 y -= 2;
             }
 
-            bricks.addChild(new Brick(`Brick-${i}`, new fc.Vector2(x, y), new fc.Vector2(3, 1)));
+            bricks.addChild(new Brick(`Brick-${i}`, new fc.Vector2(x, y), new fc.Vector2(3, 1), "ORANGE"));
             x += 4;
         }
     }

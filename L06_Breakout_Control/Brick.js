@@ -2,8 +2,8 @@
 var L06_BreakOut_Control;
 (function (L06_BreakOut_Control) {
     class Brick extends L06_BreakOut_Control.GameObject {
-        constructor(_name, _position, _size) {
-            super(_name, _position, _size);
+        constructor(_name, _position, _size, _color) {
+            super(_name, _position, _size, _color);
         }
         hit() {
             this.getParent().removeChild(this);

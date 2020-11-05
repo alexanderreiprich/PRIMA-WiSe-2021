@@ -8,8 +8,8 @@ namespace L06_BreakOut_Control {
         public speed: number = 15;
         public velocity: fc.Vector3 = fc.Vector3.ZERO();
 
-        public constructor(_name: string, _position: fc.Vector2, _size: fc.Vector2) {
-            super(_name, _position, _size);
+        public constructor(_name: string, _position: fc.Vector2, _size: fc.Vector2, _color: string) {
+            super(_name, _position, _size, _color);
 
             this.velocity = new fc.Vector3(fc.Random.default.getRange(-1, 1), fc.Random.default.getRange(-1, 1), 0);
             this.velocity.normalize(this.speed);

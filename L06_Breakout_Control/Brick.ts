@@ -4,9 +4,9 @@ namespace L06_BreakOut_Control {
 
     export class Brick extends GameObject {
 
-        public constructor(_name: string, _position: fc.Vector2, _size: fc.Vector2) {
+        public constructor(_name: string, _position: fc.Vector2, _size: fc., _color: string) {
 
-            super(_name, _position, _size);
+            super(_name, _position, _size, _color);
 
         }
 
