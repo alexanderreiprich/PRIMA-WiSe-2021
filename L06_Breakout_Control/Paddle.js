@@ -3,8 +3,8 @@ var L06_BreakOut_Control;
 (function (L06_BreakOut_Control) {
     var fc = FudgeCore;
     class Paddle extends L06_BreakOut_Control.Moveable {
-        constructor(_name, _position, _size) {
-            super(_name, _position, _size);
+        constructor(_name, _position, _size, _color) {
+            super(_name, _position, _size, _color);
         }
         movePaddle() {
             if (fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.ARROW_LEFT]) || fc.Keyboard.isPressedOne([fc.KEYBOARD_CODE.A])) {

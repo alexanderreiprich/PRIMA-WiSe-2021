@@ -1,4 +1,4 @@
-namespace L06_BreakOut_Control {
+namespace L07_BreakOut_Final {
     import fc = FudgeCore;
 
     enum GAMESTATE {
@@ -11,17 +11,19 @@ namespace L06_BreakOut_Control {
     let walls: fc.Node;
     let bricks: fc.Node;
     let paddle: Paddle;
+    let powerUp: PowerUp;
 
     let gamestate: GAMESTATE;
     gamestate = GAMESTATE.START;
-
-    export let viewport: fc.Viewport;
-    let root: fc.Node;
 
     let control: fc.Control = new fc.Control("PaddleControl", 20, fc.CONTROL_TYPE.PROPORTIONAL);
     control.setDelay(100);
 
     let score: number = 0;
+
+    export let viewport: fc.Viewport;
+    let root: fc.Node;
+
 
     function hndLoad(_event: Event): void {
 
@@ -44,11 +46,12 @@ namespace L06_BreakOut_Control {
         walls.addChild(new GameObject("WallTop", new fc.Vector2(0, 12), new fc.Vector2(35, 1), "WHITE"));
         walls.addChild(new GameObject("WallBottom", new fc.Vector2(0, -15), new fc.Vector2(35, 1), "BLACK"));
 
-
-
         bricks = new fc.Node("Bricks");
         addBricks(28);
         root.addChild(bricks);
+
+        powerUp = new PowerUp("PowerUp", fc.Vector2.Y(-10), fc.Vector2.ONE(), "WHITE");
+        root.addChild(powerUp);
 
         let cmpCamera: fc.ComponentCamera = new fc.ComponentCamera();
         cmpCamera.pivot.translateZ(40);
@@ -78,6 +81,8 @@ namespace L06_BreakOut_Control {
 
         paddle.velocity = fc.Vector3.X(control.getOutput());
 
+        powerUp.move();
+
         hndCollision();
 
         viewport.draw();
@@ -105,6 +110,12 @@ namespace L06_BreakOut_Control {
         hndWin();
 
         ball.checkCollision(paddle);
+
+        if (paddle.checkCollision(powerUp)) {
+            root.removeChild(powerUp);
+            //paddle.setSize
+            console.log("powerup pog");
+        }
 
     }
 

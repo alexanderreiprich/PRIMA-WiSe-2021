@@ -1,4 +1,4 @@
-namespace L06_BreakOut_Control {
+namespace L07_BreakOut_Final {
 
     import fc = FudgeCore;
 
