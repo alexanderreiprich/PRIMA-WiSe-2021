@@ -2,21 +2,12 @@
 var L07_BreakOut_Final;
 (function (L07_BreakOut_Final) {
     var fc = FudgeCore;
-    let GAMESTATE;
-    (function (GAMESTATE) {
-        GAMESTATE[GAMESTATE["START"] = 0] = "START";
-        GAMESTATE[GAMESTATE["PLAY"] = 1] = "PLAY";
-        GAMESTATE[GAMESTATE["GAMEOVER"] = 2] = "GAMEOVER";
-        GAMESTATE[GAMESTATE["WIN"] = 3] = "WIN";
-    })(GAMESTATE || (GAMESTATE = {}));
     window.addEventListener("load", hndLoad);
     let ball;
     let walls;
     let bricks;
     let paddle;
     let powerUp;
-    let gamestate;
-    gamestate = GAMESTATE.START;
     let control = new fc.Control("PaddleControl", 20, 0 /* PROPORTIONAL */);
     control.setDelay(100);
     let score = 0;
@@ -50,7 +41,6 @@ var L07_BreakOut_Final;
         document.getElementById("score").innerHTML = "Score: " + score;
         fc.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
-        gamestate = GAMESTATE.PLAY;
     }
     function hndLoop(_event) {
         ball.move();
@@ -87,14 +77,12 @@ var L07_BreakOut_Final;
         }
     }
     function hndLoss() {
-        gamestate = GAMESTATE.GAMEOVER;
         document.getElementById("status").innerHTML = "You Lost. Click to restart.";
         window.addEventListener("click", hndLoad);
         fc.Loop.stop();
     }
     function hndWin() {
         if (bricks.getChild(0) == null) {
-            gamestate = GAMESTATE.WIN;
             document.getElementById("status").innerHTML = "You Won! Congratulations! Click to restart.";
             window.addEventListener("click", hndLoad);
             fc.Loop.stop();

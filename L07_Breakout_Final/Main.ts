@@ -1,9 +1,6 @@
 namespace L07_BreakOut_Final {
     import fc = FudgeCore;
 
-    enum GAMESTATE {
-        START, PLAY, GAMEOVER, WIN
-    }
 
     window.addEventListener("load", hndLoad);
 
@@ -12,9 +9,6 @@ namespace L07_BreakOut_Final {
     let bricks: fc.Node;
     let paddle: Paddle;
     let powerUp: PowerUp;
-
-    let gamestate: GAMESTATE;
-    gamestate = GAMESTATE.START;
 
     let control: fc.Control = new fc.Control("PaddleControl", 20, fc.CONTROL_TYPE.PROPORTIONAL);
     control.setDelay(100);
@@ -67,7 +61,6 @@ namespace L07_BreakOut_Final {
 
         fc.Loop.addEventListener(fc.EVENT.LOOP_FRAME, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 60);
-        gamestate = GAMESTATE.PLAY;
     }
 
     function hndLoop(_event: Event): void {
@@ -121,7 +114,6 @@ namespace L07_BreakOut_Final {
 
     function hndLoss(): void {
 
-        gamestate = GAMESTATE.GAMEOVER;
         document.getElementById("status").innerHTML = "You Lost. Click to restart.";
         window.addEventListener("click", hndLoad);
         fc.Loop.stop();
@@ -131,7 +123,6 @@ namespace L07_BreakOut_Final {
     function hndWin(): void {
         
         if (bricks.getChild(0) == null) {
-            gamestate = GAMESTATE.WIN;
             document.getElementById("status").innerHTML = "You Won! Congratulations! Click to restart.";
             window.addEventListener("click", hndLoad);
             fc.Loop.stop();
