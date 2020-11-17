@@ -5,7 +5,7 @@ namespace L08_Doom_Design {
 
   window.addEventListener("load", hndLoad);
 
-  export let viewport: fc.Viewport;
+  //export let viewport: fc.Viewport;
   let root: fc.Node;
   let playerCamera: fc.Node;
   let ctrlCamVert: fc.Control;
@@ -92,7 +92,7 @@ namespace L08_Doom_Design {
       fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.ARROW_LEFT]) + fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.ARROW_RIGHT])
     );
 
-    playerVelocity = fc.Vector3.Z(-ctrlCamVert.getOutput());
+    playerVelocity = fc.Vector3.Z(-ctrlCamVert.getOutput() * 2);
 
     let frameTime: number = fc.Loop.timeFrameGame / 1000;
     let distance: fc.Vector3 = fc.Vector3.SCALE(playerVelocity, frameTime);

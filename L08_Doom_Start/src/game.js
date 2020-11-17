@@ -2,36 +2,35 @@
 var L08_Doom_Design;
 (function (L08_Doom_Design) {
     var fc = FudgeCore;
-    var fcaid = FudgeAid;
+    //import fcaid = FudgeAid;
     window.addEventListener("load", hndLoad);
-    //export let viewport: fc.Viewport;
+    const CENTER = new fc.Vector3(0, 0, 0);
     let root;
+    let floor;
     let playerCamera;
     let ctrlCamVert;
     let ctrlCamHori;
     let playerVelocity;
-    //let walls: fc.Node;
-    let txtWall = new fc.TextureImage("../DoomAssets/CEMPOIS.png");
-    let mtrWall = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(null, txtWall));
-    let meshQuad = new fc.MeshQuad("Quad");
     function hndLoad(_event) {
         const canvas = document.querySelector("canvas");
         root = new fc.Node("Root");
+        //Floor
+        floor = new L08_Doom_Design.Floor(CENTER, new fc.Vector3(1, 1, 0));
+        floor.mtxLocal.scale(fc.Vector3.ONE(20));
+        floor.getComponent(fc.ComponentMaterial).pivot.scale(fc.Vector2.ONE(10));
+        root.addChild(floor);
+        //Walls
+        let wall = new L08_Doom_Design.Wall(new fc.Vector3(-50, 5, 0), new fc.Vector3(10, 100, 0), 0);
+        root.addChild(wall);
+        let wall1 = new L08_Doom_Design.Wall(new fc.Vector3(50, 5, 0), new fc.Vector3(10, 100, 0), 180);
+        root.addChild(wall1);
+        let wall2 = new L08_Doom_Design.Wall(new fc.Vector3(-50, 5, 0), new fc.Vector3(10, 100, 0), 90);
+        root.addChild(wall2);
         playerCamera = new fc.Node("Camera");
         playerCamera.addComponent(new fc.ComponentTransform());
         ctrlCamVert = new fc.Control("VerticalCam");
         ctrlCamHori = new fc.Control("HorizontalCam");
         root.addChild(playerCamera);
-        let txtFloor = new fc.TextureImage("../DoomAssets/DEM1_5.png");
-        let mtrFloor = new fc.Material("Floor", fc.ShaderTexture, new fc.CoatTextured(null, txtFloor));
-        let floor = new fcaid.Node("Floor", fc.Matrix4x4.ROTATION_X(-90), mtrFloor, meshQuad);
-        floor.mtxLocal.scale(fc.Vector3.ONE(20));
-        floor.getComponent(fc.ComponentMaterial).pivot.scale(fc.Vector2.ONE(10));
-        root.appendChild(floor);
-        let wall = new fcaid.Node("Wall", fc.Matrix4x4.TRANSLATION(fc.Vector3.Y(1)), mtrWall, meshQuad);
-        wall.mtxLocal.scale(fc.Vector3.ONE(2));
-        wall.getComponent(fc.ComponentMaterial).pivot.scale(fc.Vector2.ONE(1));
-        root.appendChild(wall);
         let cmpCamera = new fc.ComponentCamera();
         cmpCamera.pivot.translateY(1.5);
         cmpCamera.pivot.rotateY(180);
@@ -44,24 +43,8 @@ var L08_Doom_Design;
     }
     function hndLoop() {
         hndMovement();
-        //createWalls();
         L08_Doom_Design.viewport.draw();
     }
-    /* function createWalls(): void {
-  
-      let wall: fcaid.Node = new fcaid.Node("Wall", fc.Matrix4x4.TRANSLATION(fc.Vector3.Y(1)), mtrWall, meshQuad);
-      wall.mtxLocal.scale(fc.Vector3.ONE(2));
-      wall.getComponent(fc.ComponentMaterial).pivot.scale(fc.Vector2.ONE(1));
-  
-      root.appendChild(wall);
-  
-      for (let i: number = 10; i < 10; i++) {
-  
-        walls.addChild(new (`Wall-${i}`, new fc.Vector2))
-  
-      }
-  
-    } */
     function hndMovement() {
         ctrlCamVert.setInput(fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.ARROW_UP]) + fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.ARROW_DOWN]));
         ctrlCamHori.setInput(fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.ARROW_LEFT]) + fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.ARROW_RIGHT]));
@@ -72,4 +55,4 @@ var L08_Doom_Design;
         playerCamera.mtxLocal.rotateY(ctrlCamHori.getOutput());
     }
 })(L08_Doom_Design || (L08_Doom_Design = {}));
-//# sourceMappingURL=Main.js.map
+//# sourceMappingURL=game.js.map
