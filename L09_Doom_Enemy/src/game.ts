@@ -1,4 +1,4 @@
-namespace L08_Doom_Design {
+namespace L09_Doom_Enemy {
   import fc = FudgeCore;
   import fcaid = FudgeAid;
 
@@ -11,11 +11,16 @@ namespace L08_Doom_Design {
   let root: fc.Node = new fc.Node("Root");
   let avatar: fc.Node = new fc.Node("Avatar");
   let walls: fc.Node;
+  let enemies: fc.Node = new fc.Node("Enemies");
 
-  let ctrSpeed: fc.Control = new fc.Control("AvatarSpeed", 0.2, fc.CONTROL_TYPE.PROPORTIONAL);
+  let hellknight: Enemy;
+
+  let ctrSpeed: fc.Control = new fc.Control("AvatarSpeed", 0.3, fc.CONTROL_TYPE.PROPORTIONAL);
   ctrSpeed.setDelay(100);
+  let ctrStrafe: fc.Control = new fc.Control("AvatarSpeed", 0.1, fc.CONTROL_TYPE.PROPORTIONAL);
+  ctrStrafe.setDelay(100);
   let ctrRotation: fc.Control = new fc.Control("AvatarRotation", -0.1, fc.CONTROL_TYPE.PROPORTIONAL);
-  ctrRotation.setDelay(25);
+  ctrRotation.setDelay(100);
 
   function hndLoad(_event: Event): void {
     const canvas: HTMLCanvasElement = document.querySelector("canvas");
@@ -43,6 +48,13 @@ namespace L08_Doom_Design {
     avatar.mtxLocal.rotate(fc.Vector3.Y(180));
     root.appendChild(avatar);
 
+    let txtEnemy: fc.TextureImage = new fc.TextureImage("textures/Hellknight_sprite.png");
+    let mtrEnemy: fc.Material = new fc.Material("Enemy", fc.ShaderTexture, new fc.CoatTextured(null, txtEnemy));
+
+    hellknight = new Enemy("Hell Knight", new fc.Vector2(3, 3), new fc.Vector3(1, 1.7, 1), new fc.Vector3(0, 180, 0), mtrEnemy);
+    enemies.appendChild(hellknight);
+    root.appendChild(enemies);
+
     viewport = new fc.Viewport();
     viewport.initialize("Viewport", root, cmpCamera, canvas);
     viewport.draw();
@@ -59,13 +71,16 @@ namespace L08_Doom_Design {
       fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.S, fc.KEYBOARD_CODE.ARROW_DOWN])
       + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.W, fc.KEYBOARD_CODE.ARROW_UP])
     );
-    // ctrRotation.setInput(
-    //   ƒ.Keyboard.mapToValue(1, 0, [ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT])
-    //   + ƒ.Keyboard.mapToValue(-1, 0, [ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.ARROW_RIGHT])
-    // );
 
-    if (ctrSpeed.getOutput() != 0 || ctrRotation.getOutput() != 0)
-      moveAvatar(ctrSpeed.getOutput(), ctrRotation.getOutput());
+    ctrStrafe.setInput(
+      fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])
+      + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT])
+      );
+
+    hellknight.rotateToAvatar(avatar);
+
+    moveAvatar(ctrSpeed.getOutput(), ctrRotation.getOutput(), ctrStrafe.getOutput());
+    ctrRotation.setInput(0);
 
     viewport.draw();
   }
@@ -75,10 +90,11 @@ namespace L08_Doom_Design {
     ctrRotation.setInput(_event.movementX);
   }
 
-  function moveAvatar(_translation: number, _rotation: number): void {
+  function moveAvatar(_speed: number, _rotation: number, _strafe: number): void {
     avatar.mtxLocal.rotateY(_rotation);
     let posOld: fc.Vector3 = avatar.mtxLocal.translation;
-    avatar.mtxLocal.translateZ(_translation);
+    avatar.mtxLocal.translateZ(_speed);
+    avatar.mtxLocal.translateX(_strafe);
 
     let bouncedOff: Wall[] = bounceOffWalls(<Wall[]>walls.getChildren());
     if (bouncedOff.length < 2)
@@ -127,4 +143,6 @@ namespace L08_Doom_Design {
 
     return walls;
   }
+
+
 }

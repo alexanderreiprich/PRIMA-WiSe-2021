@@ -1,4 +1,4 @@
-namespace L08_Doom_Design {
+namespace L09_Doom_Enemy {
     import fc = FudgeCore;
   
     export class GameObject extends fc.Node {

@@ -1,6 +1,6 @@
 "use strict";
-var L08_Doom_Design;
-(function (L08_Doom_Design) {
+var L09_Doom_Enemy;
+(function (L09_Doom_Enemy) {
     var fc = FudgeCore;
     var fcaid = FudgeAid;
     window.addEventListener("load", hndLoad);
@@ -9,10 +9,14 @@ var L08_Doom_Design;
     let root = new fc.Node("Root");
     let avatar = new fc.Node("Avatar");
     let walls;
-    let ctrSpeed = new fc.Control("AvatarSpeed", 0.2, 0 /* PROPORTIONAL */);
+    let enemies = new fc.Node("Enemies");
+    let hellknight;
+    let ctrSpeed = new fc.Control("AvatarSpeed", 0.3, 0 /* PROPORTIONAL */);
     ctrSpeed.setDelay(100);
+    let ctrStrafe = new fc.Control("AvatarSpeed", 0.1, 0 /* PROPORTIONAL */);
+    ctrStrafe.setDelay(100);
     let ctrRotation = new fc.Control("AvatarRotation", -0.1, 0 /* PROPORTIONAL */);
-    ctrRotation.setDelay(25);
+    ctrRotation.setDelay(100);
     function hndLoad(_event) {
         const canvas = document.querySelector("canvas");
         let meshQuad = new fc.MeshQuad("Quad");
@@ -33,9 +37,14 @@ var L08_Doom_Design;
         avatar.mtxLocal.translate(fc.Vector3.Z(10));
         avatar.mtxLocal.rotate(fc.Vector3.Y(180));
         root.appendChild(avatar);
-        L08_Doom_Design.viewport = new fc.Viewport();
-        L08_Doom_Design.viewport.initialize("Viewport", root, cmpCamera, canvas);
-        L08_Doom_Design.viewport.draw();
+        let txtEnemy = new fc.TextureImage("textures/Hellknight_sprite.png");
+        let mtrEnemy = new fc.Material("Enemy", fc.ShaderTexture, new fc.CoatTextured(null, txtEnemy));
+        hellknight = new L09_Doom_Enemy.Enemy("Hell Knight", new fc.Vector2(3, 3), new fc.Vector3(1, 1.7, 1), new fc.Vector3(0, 180, 0), mtrEnemy);
+        enemies.appendChild(hellknight);
+        root.appendChild(enemies);
+        L09_Doom_Enemy.viewport = new fc.Viewport();
+        L09_Doom_Enemy.viewport.initialize("Viewport", root, cmpCamera, canvas);
+        L09_Doom_Enemy.viewport.draw();
         canvas.addEventListener("mousemove", hndMouse);
         canvas.addEventListener("click", canvas.requestPointerLock);
         fc.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, hndLoop);
@@ -44,22 +53,22 @@ var L08_Doom_Design;
     function hndLoop(_event) {
         ctrSpeed.setInput(fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.S, fc.KEYBOARD_CODE.ARROW_DOWN])
             + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.W, fc.KEYBOARD_CODE.ARROW_UP]));
-        // ctrRotation.setInput(
-        //   ƒ.Keyboard.mapToValue(1, 0, [ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT])
-        //   + ƒ.Keyboard.mapToValue(-1, 0, [ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.ARROW_RIGHT])
-        // );
-        if (ctrSpeed.getOutput() != 0 || ctrRotation.getOutput() != 0)
-            moveAvatar(ctrSpeed.getOutput(), ctrRotation.getOutput());
-        L08_Doom_Design.viewport.draw();
+        ctrStrafe.setInput(fc.Keyboard.mapToValue(-1, 0, [fc.KEYBOARD_CODE.D, fc.KEYBOARD_CODE.ARROW_RIGHT])
+            + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT]));
+        hellknight.rotateToAvatar(avatar);
+        moveAvatar(ctrSpeed.getOutput(), ctrRotation.getOutput(), ctrStrafe.getOutput());
+        ctrRotation.setInput(0);
+        L09_Doom_Enemy.viewport.draw();
     }
     function hndMouse(_event) {
         // console.log(_event.movementX, _event.movementY);
         ctrRotation.setInput(_event.movementX);
     }
-    function moveAvatar(_translation, _rotation) {
+    function moveAvatar(_speed, _rotation, _strafe) {
         avatar.mtxLocal.rotateY(_rotation);
         let posOld = avatar.mtxLocal.translation;
-        avatar.mtxLocal.translateZ(_translation);
+        avatar.mtxLocal.translateZ(_speed);
+        avatar.mtxLocal.translateX(_strafe);
         let bouncedOff = bounceOffWalls(walls.getChildren());
         if (bouncedOff.length < 2)
             return;
@@ -86,15 +95,15 @@ var L08_Doom_Design;
         let txtWall = new fc.TextureImage("textures/CEMPOIS.png");
         let mtrWall = new fc.Material("Wall", fc.ShaderTexture, new fc.CoatTextured(null, txtWall));
         for (let i = -numWalls / 2 + 0.5; i < numWalls / 2; i++) {
-            walls.appendChild(new L08_Doom_Design.Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-numWalls / 2, 0.5, i), sizeWall), fc.Vector3.Y(90), mtrWall));
+            walls.appendChild(new L09_Doom_Enemy.Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-numWalls / 2, 0.5, i), sizeWall), fc.Vector3.Y(90), mtrWall));
             // for (let i: number = -numWalls / 2 + 0.5; i < numWalls / 2; i++)
-            walls.appendChild(new L08_Doom_Design.Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(numWalls / 2, 0.5, i), sizeWall), fc.Vector3.Y(-90), mtrWall));
+            walls.appendChild(new L09_Doom_Enemy.Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(numWalls / 2, 0.5, i), sizeWall), fc.Vector3.Y(-90), mtrWall));
             // for (let i: number = -numWalls / 2 + 0.5; i < numWalls / 2; i++)
-            walls.appendChild(new L08_Doom_Design.Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(i, 0.5, -numWalls / 2), sizeWall), fc.Vector3.Y(0), mtrWall));
+            walls.appendChild(new L09_Doom_Enemy.Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(i, 0.5, -numWalls / 2), sizeWall), fc.Vector3.Y(0), mtrWall));
             // for (let i: number = -numWalls / 2 + 0.5; i < numWalls / 2; i++)
-            walls.appendChild(new L08_Doom_Design.Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(i, 0.5, numWalls / 2), sizeWall), fc.Vector3.Y(180), mtrWall));
+            walls.appendChild(new L09_Doom_Enemy.Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(i, 0.5, numWalls / 2), sizeWall), fc.Vector3.Y(180), mtrWall));
         }
         return walls;
     }
-})(L08_Doom_Design || (L08_Doom_Design = {}));
+})(L09_Doom_Enemy || (L09_Doom_Enemy = {}));
 //# sourceMappingURL=game.js.map
