@@ -8,11 +8,22 @@ namespace L09_Doom_Enemy {
 
             super(_name, _size, _position, _rotation);
 
+            let cmpMaterial: fc.ComponentMaterial = new fc.ComponentMaterial(_material);
+            this.addComponent(cmpMaterial);
+
+            this.mtxLocal.translateY(_size.y / 2);
+
         }
 
         public rotateToAvatar(_target: fc.Node): void {
 
             this.mtxLocal.showTo(_target.mtxLocal.translation);
+
+        }
+
+        public moveTowardsAvatar(_speed: number): void {
+
+            this.mtxLocal.translateZ(_speed);
 
         }
 

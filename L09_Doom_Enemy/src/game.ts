@@ -17,9 +17,9 @@ namespace L09_Doom_Enemy {
 
   let ctrSpeed: fc.Control = new fc.Control("AvatarSpeed", 0.3, fc.CONTROL_TYPE.PROPORTIONAL);
   ctrSpeed.setDelay(100);
-  let ctrStrafe: fc.Control = new fc.Control("AvatarSpeed", 0.1, fc.CONTROL_TYPE.PROPORTIONAL);
+  let ctrStrafe: fc.Control = new fc.Control("AvatarSpeed", 0.2, fc.CONTROL_TYPE.PROPORTIONAL);
   ctrStrafe.setDelay(100);
-  let ctrRotation: fc.Control = new fc.Control("AvatarRotation", -0.1, fc.CONTROL_TYPE.PROPORTIONAL);
+  let ctrRotation: fc.Control = new fc.Control("AvatarRotation", -0.3, fc.CONTROL_TYPE.PROPORTIONAL);
   ctrRotation.setDelay(100);
 
   function hndLoad(_event: Event): void {
@@ -33,9 +33,6 @@ namespace L09_Doom_Enemy {
     floor.getComponent(fc.ComponentMaterial).pivot.scale(fc.Vector2.ONE(numWalls));
 
     root.appendChild(floor);
-
-    walls = createWalls();
-    root.appendChild(walls);
 
     let cmpCamera: fc.ComponentCamera = new fc.ComponentCamera();
     cmpCamera.projectCentral(1, 45, fc.FIELD_OF_VIEW.DIAGONAL, 0.2, 10000);
@@ -51,9 +48,13 @@ namespace L09_Doom_Enemy {
     let txtEnemy: fc.TextureImage = new fc.TextureImage("textures/Hellknight_sprite.png");
     let mtrEnemy: fc.Material = new fc.Material("Enemy", fc.ShaderTexture, new fc.CoatTextured(null, txtEnemy));
 
-    hellknight = new Enemy("Hell Knight", new fc.Vector2(3, 3), new fc.Vector3(1, 1.7, 1), new fc.Vector3(0, 180, 0), mtrEnemy);
+    hellknight = new Enemy("Hell Knight", fc.Vector2.ONE(3), new fc.Vector3(0, 0, 0), new fc.Vector3(0, 0, 0), mtrEnemy);
+    enemies.addComponent(new fc.ComponentTransform());
     enemies.appendChild(hellknight);
     root.appendChild(enemies);
+
+    walls = createWalls();
+    root.appendChild(walls);
 
     viewport = new fc.Viewport();
     viewport.initialize("Viewport", root, cmpCamera, canvas);
@@ -64,6 +65,8 @@ namespace L09_Doom_Enemy {
 
     fc.Loop.addEventListener(fc.EVENT.LOOP_FRAME, hndLoop);
     fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 120);
+
+    console.log(root.getChildren());
   }
 
   function hndLoop(_event: Event): void {
@@ -77,16 +80,17 @@ namespace L09_Doom_Enemy {
       + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT])
       );
 
-    hellknight.rotateToAvatar(avatar);
+    // hellknight.rotateToAvatar(avatar);
+    // hellknight.moveTowardsAvatar(0.1);
 
     moveAvatar(ctrSpeed.getOutput(), ctrRotation.getOutput(), ctrStrafe.getOutput());
     ctrRotation.setInput(0);
+    hndEnemy();
 
     viewport.draw();
   }
 
   function hndMouse(_event: MouseEvent): void {
-    // console.log(_event.movementX, _event.movementY);
     ctrRotation.setInput(_event.movementX);
   }
 
@@ -122,6 +126,43 @@ namespace L09_Doom_Enemy {
     return bouncedOff;
   }
 
+  function hndEnemy(): void {
+    let tempPos: fc.Vector3 = hellknight.mtxLocal.translation;
+    let neartarget: Boolean = true;
+    hellknight.rotateToAvatar(avatar);
+
+    for (let walls of root.getChildrenByName("Walls"))
+      for (let wall of walls.getChildren() as GameObject[]) {
+        if (hellknight.isTargetbetween(avatar, wall)) {
+          neartarget = false;
+          break;
+        }
+      }
+    if (hellknight.detectHit(avatar.mtxLocal.translation, 1)) {
+      neartarget = false;
+    }
+    if (neartarget) {
+      hellknight.moveTowardsAvatar(0.1);
+      hndCollision(hellknight, tempPos, 0.8);
+
+    }
+
+  }
+
+  function hndCollision(_target: GameObject, _oldPos: fc.Vector3, _targetradius: number): void {
+
+    for (let walls of root.getChildrenByName("Walls"))
+      for (let wall of walls.getChildren() as GameObject[]) {
+        if (wall.detectHit(_target.mtxWorld.translation, _targetradius)) {
+          _oldPos.x += wall.mtxLocal.getZ().x * 0.01;
+          _oldPos.z += wall.mtxLocal.getZ().z * 0.01;
+          _target.mtxLocal.translation = _oldPos;
+
+        }
+
+      }
+  }
+
   function createWalls(): fc.Node {
     let walls: fc.Node = new fc.Node("Walls");
 
@@ -140,6 +181,22 @@ namespace L09_Doom_Enemy {
       // for (let i: number = -numWalls / 2 + 0.5; i < numWalls / 2; i++)
       walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(i, 0.5, numWalls / 2), sizeWall), fc.Vector3.Y(180), mtrWall));
     }
+
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-5, 0.5, .5), sizeWall), fc.Vector3.Y(90), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-5, 0.5, 1.5), sizeWall), fc.Vector3.Y(90), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-5, 0.5, 2.5), sizeWall), fc.Vector3.Y(90), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-5, 0.5, 3.5), sizeWall), fc.Vector3.Y(90), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-5, 0.5, .5), sizeWall), fc.Vector3.Y(90), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-5.5, 0.5, 0), sizeWall), fc.Vector3.Y(180), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-6.5, 0.5, 0), sizeWall), fc.Vector3.Y(180), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-7.5, 0.5, 0), sizeWall), fc.Vector3.Y(180), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-8.5, 0.5, 0), sizeWall), fc.Vector3.Y(180), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-9.5, 0.5, 0), sizeWall), fc.Vector3.Y(180), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-5.5, 0.5, 4), sizeWall), fc.Vector3.Y(0), mtrWall)); 
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-6.5, 0.5, 4), sizeWall), fc.Vector3.Y(0), mtrWall));   walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-6.5, 0.5, 3.5), sizeWall), fc.Vector3.Y(180), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-7.5, 0.5, 4), sizeWall), fc.Vector3.Y(0), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-8.5, 0.5, 4), sizeWall), fc.Vector3.Y(0), mtrWall));
+    walls.appendChild(new Wall(fc.Vector2.ONE(3), fc.Vector3.SCALE(new fc.Vector3(-9.5, 0.5, 4), sizeWall), fc.Vector3.Y(0), mtrWall));
 
     return walls;
   }
