@@ -1,6 +1,6 @@
 "use strict";
-var L09_Doom_Enemy;
-(function (L09_Doom_Enemy) {
+var L10_Doom_States;
+(function (L10_Doom_States) {
     var fc = FudgeCore;
     var fcaid = FudgeAid;
     let ANGLE;
@@ -14,27 +14,30 @@ var L09_Doom_Enemy;
         ANGLE[ANGLE["_225"] = 5] = "_225";
         ANGLE[ANGLE["_270"] = 6] = "_270";
         ANGLE[ANGLE["_315"] = 7] = "_315";
-    })(ANGLE = L09_Doom_Enemy.ANGLE || (L09_Doom_Enemy.ANGLE = {}));
+    })(ANGLE = L10_Doom_States.ANGLE || (L10_Doom_States.ANGLE = {}));
     let JOB;
     (function (JOB) {
         JOB[JOB["IDLE"] = 0] = "IDLE";
         JOB[JOB["PATROL"] = 1] = "PATROL";
-    })(JOB = L09_Doom_Enemy.JOB || (L09_Doom_Enemy.JOB = {}));
+    })(JOB = L10_Doom_States.JOB || (L10_Doom_States.JOB = {}));
     class Enemy extends fc.Node {
         constructor(_name, _position) {
             super(_name);
             this.speed = 1;
+            this.angleView = 0;
+            this.job = JOB.PATROL;
             this.addComponent(new fc.ComponentTransform());
             this.mtxLocal.translation = _position;
             this.show = new fcaid.Node("Show", fc.Matrix4x4.IDENTITY());
             this.appendChild(this.show);
             this.sprite = new fcaid.NodeSprite("Sprite");
             this.show.appendChild(this.sprite);
+            fc.Time.game.setTimer(5000, 1, () => console.log("zeit um"));
             this.sprite.setAnimation(Enemy.animations["Idle_000"]);
             // this.sprite.showFrame(0);
             this.sprite.setFrameDirection(1);
             this.sprite.framerate = 2;
-            this.posTarget = _position;
+            this.chooseTargetPosition();
         }
         static generateSprites(_spritesheet) {
             Enemy.animations = {};
@@ -47,7 +50,7 @@ var L09_Doom_Enemy;
         }
         changeAngle() {
             let enemyViewDirection = this.mtxWorld.getZ();
-            let avatarToEnemy = fc.Vector3.TRANSFORMATION(L09_Doom_Enemy.avatar.mtxWorld.translation, this.mtxWorldInverse, true);
+            let avatarToEnemy = fc.Vector3.TRANSFORMATION(L10_Doom_States.avatar.mtxWorld.translation, this.mtxWorldInverse, true);
             let angle = fc.Vector3.DOT(avatarToEnemy, enemyViewDirection) / (this.pythagoras(avatarToEnemy) * this.pythagoras(enemyViewDirection));
             angle = Math.acos(angle) * 180 / Math.PI;
             console.log("Angle: " + angle + " x-achse: " + avatarToEnemy.x);
@@ -67,21 +70,54 @@ var L09_Doom_Enemy;
             return Math.sqrt(Math.pow(_vector.x, 2) + Math.pow(_vector.z, 2));
         }
         update() {
-            if (this.mtxLocal.translation.equals(this.posTarget, 0.1))
-                this.chooseTargetPosition();
-            this.move();
+            switch (this.job) {
+                case JOB.PATROL:
+                    if (this.mtxLocal.translation.equals(this.posTarget, 0.1))
+                        //this.chooseTargetPosition();
+                        this.job = JOB.IDLE;
+                    this.move();
+                    break;
+                case JOB.IDLE:
+                    if (this.mtxLocal.translation.equals(L10_Doom_States.avatar.mtxLocal.translation, 1)) {
+                        this.chooseTargetPosition();
+                        this.job = JOB.PATROL;
+                    }
+                default:
+                    break;
+            }
+            this.displayAnimation();
+        }
+        displayAnimation() {
+            this.show.mtxLocal.showTo(fc.Vector3.TRANSFORMATION(L10_Doom_States.avatar.mtxLocal.translation, this.mtxWorldInverse, true));
+            let rotation = this.show.mtxLocal.rotation.y;
+            rotation = (rotation + 360 + 22.5) % 360;
+            rotation = Math.floor(rotation / 45);
+            if (this.angleView == rotation)
+                return;
+            this.angleView = rotation;
+            if (rotation > 4) {
+                rotation = 8 - rotation;
+                this.flip(true);
+            }
+            else
+                this.flip(false);
+            let section = ANGLE[rotation]; // .padStart(3, "0");
+            console.log(section);
+            this.sprite.setAnimation(Enemy.animations["Idle" + section]);
         }
         move() {
             this.mtxLocal.showTo(this.posTarget);
             this.mtxLocal.translateZ(this.speed * fc.Loop.timeFrameGame / 1000);
-            this.show.mtxLocal.showTo(fc.Vector3.TRANSFORMATION(L09_Doom_Enemy.avatar.mtxLocal.translation, this.mtxWorldInverse, true));
         }
         chooseTargetPosition() {
             let range = 5; //sizeWall * numWalls / 2 - 2;
             this.posTarget = new fc.Vector3(fc.Random.default.getRange(-range, range), 0, fc.Random.default.getRange(-range, range));
             // console.log("New target", this.posTarget.toString());
         }
+        flip(_reverse) {
+            this.sprite.mtxLocal.rotation = ƒ.Vector3.Y(_reverse ? 180 : 0);
+        }
     }
-    L09_Doom_Enemy.Enemy = Enemy;
-})(L09_Doom_Enemy || (L09_Doom_Enemy = {}));
+    L10_Doom_States.Enemy = Enemy;
+})(L10_Doom_States || (L10_Doom_States = {}));
 //# sourceMappingURL=enemy.js.map
