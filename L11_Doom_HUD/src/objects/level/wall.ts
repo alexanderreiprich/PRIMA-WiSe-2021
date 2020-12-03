@@ -1,4 +1,4 @@
-namespace L10_Doom_AI {
+namespace L11_Doom_HUD {
 
     import fc = FudgeCore;
 
@@ -9,7 +9,6 @@ namespace L10_Doom_AI {
 
             let cmpMaterial: fc.ComponentMaterial = new fc.ComponentMaterial(_material);
             cmpMaterial.pivot.scale(fc.Vector2.ONE(1));
-            this.mtxLocal.translateY(_size.y / 2);
             this.addComponent(cmpMaterial);
         }
 

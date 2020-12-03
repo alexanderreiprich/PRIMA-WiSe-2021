@@ -1,6 +1,6 @@
 "use strict";
-var L10_Doom_AI;
-(function (L10_Doom_AI) {
+var L11_Doom_HUD;
+(function (L11_Doom_HUD) {
     var fc = FudgeCore;
     let GameObject = /** @class */ (() => {
         class GameObject extends fc.Node {
@@ -47,6 +47,6 @@ var L10_Doom_AI;
         GameObject.meshQuad = new fc.MeshSprite();
         return GameObject;
     })();
-    L10_Doom_AI.GameObject = GameObject;
-})(L10_Doom_AI || (L10_Doom_AI = {}));
+    L11_Doom_HUD.GameObject = GameObject;
+})(L11_Doom_HUD || (L11_Doom_HUD = {}));
 //# sourceMappingURL=gameobject.js.map

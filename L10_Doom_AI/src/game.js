@@ -35,12 +35,6 @@ var L10_Doom_States;
         L10_Doom_States.avatar.mtxLocal.translate(fc.Vector3.Z(10));
         L10_Doom_States.avatar.mtxLocal.rotate(fc.Vector3.Y(180));
         root.appendChild(L10_Doom_States.avatar);
-        // let txtEnemy: fc.TextureImage = new fc.TextureImage("textures/Hellknight_sprite.png");
-        // let mtrEnemy: fc.Material = new fc.Material("Enemy", fc.ShaderTexture, new fc.CoatTextured(null, txtEnemy));
-        /* hellknight = new Enemy("Hell Knight", fc.Vector2.ONE(3), new fc.Vector3(0, 0, 0), new fc.Vector3(0, 0, 0), mtrEnemy);
-        enemies.addComponent(new fc.ComponentTransform());
-        enemies.appendChild(hellknight);
-        root.appendChild(enemies); */
         enemies = await createEnemies();
         root.appendChild(enemies);
         walls = createWalls();
@@ -82,7 +76,6 @@ var L10_Doom_States;
         if (bouncedOff.length == 0) {
             return;
         }
-        console.log("Stuck!");
         L10_Doom_States.avatar.mtxLocal.translation = posOld;
     }
     function bounceOffWalls(_walls) {
@@ -104,8 +97,8 @@ var L10_Doom_States;
         let coatSprite = new fc.CoatTextured(clrWhite, txtHellknight);
         L10_Doom_States.Enemy.generateSprites(coatSprite);
         enemies.appendChild(new L10_Doom_States.Enemy("Hellknight0", new fc.Vector3(0, 0, 0)));
-        enemies.appendChild(new L10_Doom_States.Enemy("Hellknight1", new fc.Vector3(3, 0, 0)));
-        enemies.appendChild(new L10_Doom_States.Enemy("Hellknight2", new fc.Vector3(0, 0, 3)));
+        /*     enemies.appendChild(new Enemy("Hellknight1", new fc.Vector3(3, 0, 0)));
+            enemies.appendChild(new Enemy("Hellknight2", new fc.Vector3(0, 0, 3))); */
         // console.log("Enemies", enemies);
         return enemies;
     }

@@ -1,4 +1,4 @@
-namespace L10_Doom_States {
+namespace L11_Doom_HUD {
   import fc = FudgeCore;
   import fcaid = FudgeAid;
 
@@ -98,6 +98,8 @@ namespace L10_Doom_States {
     let posOld: fc.Vector3 = avatar.mtxLocal.translation;
     avatar.mtxLocal.translateZ(_speed);
     avatar.mtxLocal.translateX(_strafe);
+
+    Hud.displayPosition(posOld);
 
     let bouncedOff: Wall[] = bounceOffWalls(<Wall[]>walls.getChildren());
     if (bouncedOff.length < 2) {

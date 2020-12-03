@@ -1,6 +1,6 @@
 "use strict";
-var L10_Doom_States;
-(function (L10_Doom_States) {
+var L11_Doom_HUD;
+(function (L11_Doom_HUD) {
     var fc = FudgeCore;
     var fcaid = FudgeAid;
     let ANGLE;
@@ -14,13 +14,13 @@ var L10_Doom_States;
         ANGLE[ANGLE["_225"] = 5] = "_225";
         ANGLE[ANGLE["_270"] = 6] = "_270";
         ANGLE[ANGLE["_315"] = 7] = "_315";
-    })(ANGLE = L10_Doom_States.ANGLE || (L10_Doom_States.ANGLE = {}));
+    })(ANGLE = L11_Doom_HUD.ANGLE || (L11_Doom_HUD.ANGLE = {}));
     let JOB;
     (function (JOB) {
         JOB[JOB["IDLE"] = 0] = "IDLE";
         JOB[JOB["PATROL"] = 1] = "PATROL";
         JOB[JOB["HUNT"] = 2] = "HUNT";
-    })(JOB = L10_Doom_States.JOB || (L10_Doom_States.JOB = {}));
+    })(JOB = L11_Doom_HUD.JOB || (L11_Doom_HUD.JOB = {}));
     class Enemy extends fc.Node {
         constructor(_name, _position) {
             super(_name);
@@ -53,7 +53,7 @@ var L10_Doom_States;
         update() {
             switch (this.job) {
                 case JOB.PATROL:
-                    if (this.mtxLocal.translation.equals(L10_Doom_States.avatar.mtxLocal.translation, 20)) {
+                    if (this.mtxLocal.translation.equals(L11_Doom_HUD.avatar.mtxLocal.translation, 20)) {
                         this.job = JOB.HUNT;
                         console.log("ich jage >:)");
                     }
@@ -74,8 +74,8 @@ var L10_Doom_States;
                     }
                     break;
                 case JOB.HUNT:
-                    if (this.mtxLocal.translation.equals(L10_Doom_States.avatar.mtxLocal.translation, 20)) {
-                        this.posTarget = L10_Doom_States.avatar.mtxLocal.translation;
+                    if (this.mtxLocal.translation.equals(L11_Doom_HUD.avatar.mtxLocal.translation, 20)) {
+                        this.posTarget = L11_Doom_HUD.avatar.mtxLocal.translation;
                         this.move();
                         break;
                     }
@@ -91,7 +91,7 @@ var L10_Doom_States;
             this.displayAnimation();
         }
         displayAnimation() {
-            this.show.mtxLocal.showTo(fc.Vector3.TRANSFORMATION(L10_Doom_States.avatar.mtxLocal.translation, this.mtxWorldInverse, true));
+            this.show.mtxLocal.showTo(fc.Vector3.TRANSFORMATION(L11_Doom_HUD.avatar.mtxLocal.translation, this.mtxWorldInverse, true));
             let rotation = this.show.mtxLocal.rotation.y;
             rotation = (rotation + 360 + 22.5) % 360;
             rotation = Math.floor(rotation / 45);
@@ -120,6 +120,6 @@ var L10_Doom_States;
             this.sprite.mtxLocal.rotation = fc.Vector3.Y(_reverse ? 180 : 0);
         }
     }
-    L10_Doom_States.Enemy = Enemy;
-})(L10_Doom_States || (L10_Doom_States = {}));
+    L11_Doom_HUD.Enemy = Enemy;
+})(L11_Doom_HUD || (L11_Doom_HUD = {}));
 //# sourceMappingURL=enemy.js.map

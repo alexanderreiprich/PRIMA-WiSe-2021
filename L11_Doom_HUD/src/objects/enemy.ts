@@ -1,4 +1,4 @@
-namespace L10_Doom_States {
+namespace L11_Doom_HUD {
 
   import fc = FudgeCore;
   import fcaid = FudgeAid;

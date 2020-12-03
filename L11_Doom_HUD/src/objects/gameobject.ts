@@ -1,4 +1,4 @@
-namespace L10_Doom_AI {
+namespace L11_Doom_HUD {
   import fc = FudgeCore;
 
   export class GameObject extends fc.Node {
