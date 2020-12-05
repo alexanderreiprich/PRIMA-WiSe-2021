@@ -39,11 +39,13 @@ var L11_Doom_HUD;
         root.appendChild(enemies);
         walls = createWalls();
         root.appendChild(walls);
+        L11_Doom_HUD.Hud.displayHealthAndAmmo();
         L11_Doom_HUD.viewport = new fc.Viewport();
         L11_Doom_HUD.viewport.initialize("Viewport", root, cmpCamera, canvas);
         L11_Doom_HUD.viewport.draw();
         canvas.addEventListener("mousemove", hndMouse);
         canvas.addEventListener("click", canvas.requestPointerLock);
+        canvas.addEventListener("click", L11_Doom_HUD.Hud.shootGun);
         fc.Loop.addEventListener("loopFrame" /* LOOP_FRAME */, hndLoop);
         fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 120);
         // console.log(root.getChildren());
@@ -55,13 +57,17 @@ var L11_Doom_HUD;
             + fc.Keyboard.mapToValue(1, 0, [fc.KEYBOARD_CODE.A, fc.KEYBOARD_CODE.ARROW_LEFT]));
         moveAvatar(ctrSpeed.getOutput(), ctrRotation.getOutput(), ctrStrafe.getOutput());
         ctrRotation.setInput(0);
-        for (let enemy of enemies.getChildren())
+        for (let enemy of enemies.getChildren()) {
             enemy.update();
-        //hndEnemy();
+        }
         L11_Doom_HUD.viewport.draw();
+        L11_Doom_HUD.Hud.updateDisplay();
     }
     function hndMouse(_event) {
         ctrRotation.setInput(_event.movementX);
+    }
+    function reloadGun() {
+        L11_Doom_HUD.Hud.reloadGun();
     }
     function moveAvatar(_speed, _rotation, _strafe) {
         L11_Doom_HUD.avatar.mtxLocal.rotateY(_rotation);

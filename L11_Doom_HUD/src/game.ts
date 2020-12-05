@@ -50,12 +50,16 @@ namespace L11_Doom_HUD {
     walls = createWalls();
     root.appendChild(walls);
 
+    Hud.displayHealthAndAmmo();
+
     viewport = new fc.Viewport();
     viewport.initialize("Viewport", root, cmpCamera, canvas);
     viewport.draw();
 
     canvas.addEventListener("mousemove", hndMouse);
     canvas.addEventListener("click", canvas.requestPointerLock);
+
+    canvas.addEventListener("click", Hud.shootGun);
 
     fc.Loop.addEventListener(fc.EVENT.LOOP_FRAME, hndLoop);
     fc.Loop.start(fc.LOOP_MODE.TIME_GAME, 120);
@@ -77,18 +81,26 @@ namespace L11_Doom_HUD {
     );
 
     moveAvatar(ctrSpeed.getOutput(), ctrRotation.getOutput(), ctrStrafe.getOutput());
+
     ctrRotation.setInput(0);
-    for (let enemy of enemies.getChildren() as Enemy[])
+    for (let enemy of enemies.getChildren() as Enemy[]) {
       enemy.update();
-    
-    //hndEnemy();
+    }
 
     viewport.draw();
+    Hud.updateDisplay();
+    
   }
 
   function hndMouse(_event: MouseEvent): void {
 
     ctrRotation.setInput(_event.movementX);
+
+  }
+
+  function reloadGun(): void {
+
+    Hud.reloadGun();
 
   }
 

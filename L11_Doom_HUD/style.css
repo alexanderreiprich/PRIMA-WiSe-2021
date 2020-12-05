@@ -1,0 +1,67 @@
+html, body {
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+}
+canvas {
+    width: 100vw;
+    height: 100vh;
+}
+
+div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: white;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-size: large;
+}
+div#position {
+    left: 45%;
+    font-size: larger;
+}
+div#health {
+
+    position: absolute;
+    font-size: 50px;
+    top: 92%;
+    left: 2%;
+    color: red;
+
+}
+div#ammo {
+
+    position: absolute;
+    font-size: 50px;
+    top: 92%;
+    left: 89%;
+    color: blue;
+
+}
+div#bottomblock {
+
+    position: absolute;
+    top: 89%;
+    background-color:black;
+    opacity: 90%;
+    height: 120px;
+    width: 99.7%;
+    border-radius: 20%;
+    border-color: aqua;
+    border-style: dashed;
+
+}
+div#topellipse {
+
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    background-color:black;
+    opacity: 90%;
+    height: 150px;
+    width: 120%;
+    border-radius: 40%;
+    border-color: aqua;
+    border-style: dashed;
+
+}

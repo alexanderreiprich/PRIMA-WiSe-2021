@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Doom</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
     <script src="../FudgeCore/FudgeCore.js"></script>
     <script src="../FudgeAid/FudgeAid.js"></script>
     <script src="src/objects/gameobject.js"></script>
@@ -13,34 +14,17 @@
     <script src="src/objects/level/wall.js"></script>
     <script src="src/Hud.js"></script>
     <script src="src/game.js"></script>
-    
-    <style>
-        html, body {
-            padding: 0px;
-            margin: 0px;
-            overflow: hidden;
-        }
-        canvas {
-            width: 100vw;
-            height: 100vh;
-        }
-
-        div {
-            position: absolute;
-            top: 0;
-            left: 0;
-            color: white;
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-            font-size: large;
-        }
-    </style>
-
 
 </head>
 
 <body>
     <canvas width="1280" height="720"></canvas>
+    <div id="topellipse"></div>
     <div id="position"></div>
+    <div id="bottomblock"></div>
+    <div id="health"></div>
+    <div id="ammo"></div>
+
 </body>
 
 </html>
