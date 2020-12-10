@@ -4,7 +4,7 @@ var L11_Doom_HUD;
     let maxHealth = 100;
     let maxAmmo = 30;
     let currentAmmo = maxAmmo;
-    let currentHealth = currentAmmo;
+    let currentHealth = maxHealth;
     class Hud {
         static displayPosition(_position) {
             let divPosition = document.querySelector("div#position");
@@ -19,14 +19,12 @@ var L11_Doom_HUD;
         static updateDisplay() {
             let divHealth = document.querySelector("div#health");
             let divAmmo = document.querySelector("div#ammo");
-            divHealth.innerHTML = currentHealth.toString();
-            divAmmo.innerHTML = currentAmmo.toString() + "/" + maxAmmo.toString();
+            divHealth.innerHTML = "HEALTH " + currentHealth.toString();
+            divAmmo.innerHTML = "AMMO " + currentAmmo.toString() + "/" + maxAmmo.toString();
         }
         static shootGun() {
-            console.log(currentAmmo);
-            if (currentAmmo > 0) {
+            if (currentAmmo > 0)
                 currentAmmo--;
-            }
         }
         static reloadGun() {
             if (currentAmmo != maxAmmo)

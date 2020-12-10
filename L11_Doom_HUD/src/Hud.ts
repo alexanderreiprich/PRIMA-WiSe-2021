@@ -6,7 +6,7 @@ namespace L11_Doom_HUD {
     let maxAmmo: number = 30;
 
     let currentAmmo: number = maxAmmo;
-    let currentHealth: number = currentAmmo;
+    let currentHealth: number = maxHealth;
 
     
 
@@ -31,25 +31,23 @@ namespace L11_Doom_HUD {
             let divHealth: HTMLDivElement = document.querySelector("div#health");
             let divAmmo: HTMLDivElement = document.querySelector("div#ammo");
 
-            divHealth.innerHTML = currentHealth.toString();
-            divAmmo.innerHTML = currentAmmo.toString() + "/" + maxAmmo.toString();
+            divHealth.innerHTML = "HEALTH " + currentHealth.toString();
+            divAmmo.innerHTML = "AMMO " + currentAmmo.toString() + "/" + maxAmmo.toString();
 
         }
 
         public static shootGun(): void {
 
-            console.log(currentAmmo);
-            if (currentAmmo > 0) {
+            if (currentAmmo > 0) 
                 currentAmmo--;
-            }
-
+            
         }
 
         public static reloadGun(): void {
 
             if (currentAmmo != maxAmmo)
                 currentAmmo = maxAmmo;
-
+            
         }
 
     }

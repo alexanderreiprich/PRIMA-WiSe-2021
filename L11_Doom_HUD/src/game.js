@@ -66,9 +66,6 @@ var L11_Doom_HUD;
     function hndMouse(_event) {
         ctrRotation.setInput(_event.movementX);
     }
-    function reloadGun() {
-        L11_Doom_HUD.Hud.reloadGun();
-    }
     function moveAvatar(_speed, _rotation, _strafe) {
         L11_Doom_HUD.avatar.mtxLocal.rotateY(_rotation);
         let posOld = L11_Doom_HUD.avatar.mtxLocal.translation;

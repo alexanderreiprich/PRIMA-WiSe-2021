@@ -98,12 +98,6 @@ namespace L11_Doom_HUD {
 
   }
 
-  function reloadGun(): void {
-
-    Hud.reloadGun();
-
-  }
-
   function moveAvatar(_speed: number, _rotation: number, _strafe: number): void {
 
     avatar.mtxLocal.rotateY(_rotation);
